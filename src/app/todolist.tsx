@@ -151,12 +151,12 @@ export default function TodoList() {
   );
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-4 bg-white shadow-md rounded-lg">
-      <h1 className="text-2xl text-emerald-500 font-bold mb-4">To-Do List</h1>
-      <div className="flex justify-center mb-4">
+    <div className="max-w-md mx-auto mt-10 p-4 bg-gradient-to-br from-white to-gray-100 shadow-xl rounded-2xl">
+      <h1 className="text-3xl font-bold text-center text-purple-600 mb-6">To-Do List</h1>
+      <div className="flex justify-center mb-6">
         <button
           onClick={addTask}
-          className="bg-slate-500 text-white px-4 py-2 rounded"
+          className="bg-gradient-to-r from-emerald-500 to-green-400 text-white font-semibold px-6 py-2 rounded-full shadow hover:scale-105 transition-transform"
         >
           Tambah Tugas
         </button>
@@ -164,16 +164,16 @@ export default function TodoList() {
       {loading ? (
         <p className="text-center text-gray-500">Memuat tugas...</p>
       ) : (
-        <ul>
+        <ul className="space-y-3">
           <AnimatePresence>
             {sortedTasks.map((task) => {
               const timeLeft = calculateTimeRemaining(task.deadline);
               const isExpired = timeLeft === 'Waktu habis!';
               const taskColor = task.completed
-                ? 'bg-green-200'
+                ? 'bg-green-200 border-green-400'
                 : isExpired
-                ? 'bg-red-200'
-                : 'bg-yellow-200';
+                ? 'bg-red-200 border-red-400'
+                : 'bg-yellow-100 border-yellow-300';
 
               return (
                 <motion.li
@@ -182,15 +182,15 @@ export default function TodoList() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className={`flex flex-col justify-between p-2 border-b rounded-lg ${taskColor}`}
+                  className={`border-l-4 ${taskColor} px-4 py-2 rounded shadow-sm`}
                 >
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-start">
                     <span
                       onClick={() => toggleTask(task.id)}
-                      className={`cursor-pointer transition-500 ${
+                      className={`cursor-pointer block w-2/3 ${
                         task.completed
-                          ? 'line-through text-gray-500'
-                          : 'font-semibold text-gray-700'
+                          ? 'line-through text-gray-400'
+                          : 'font-medium text-gray-800'
                       }`}
                     >
                       {task.text}
@@ -198,22 +198,22 @@ export default function TodoList() {
                     <div className="flex space-x-2">
                       <button
                         onClick={() => editTask(task)}
-                        className="text-white p-1 rounded bg-blue-600 hover:bg-blue-800"
+                        className="text-xs bg-blue-500 hover:bg-blue-700 text-white px-2 py-1 rounded"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => deleteTask(task.id)}
-                        className="text-white p-1 rounded bg-red-600 hover:bg-red-800"
+                        className="text-xs bg-red-500 hover:bg-red-700 text-white px-2 py-1 rounded"
                       >
                         Hapus
                       </button>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-700">
+                  <p className="text-sm text-gray-600 mt-1">
                     Deadline: {new Date(task.deadline).toLocaleString()}
                   </p>
-                  <p className="text-xs font-semibold text-gray-700">
+                  <p className="text-xs font-semibold text-gray-500">
                     ⏳ {timeRemaining[task.id] || 'Menghitung...'}
                   </p>
                 </motion.li>
