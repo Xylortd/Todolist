@@ -152,11 +152,11 @@ export default function TodoList() {
 
   return (
     <div className="max-w-md mx-auto mt-10 p-4 bg-gradient-to-br from-white to-gray-100 shadow-xl rounded-2xl">
-      <h1 className="text-3xl font-bold text-center text-purple-600 mb-6">To-Do List</h1>
+      <h1 className="text-3xl font-bold text-center text-emerald-500 mb-6 ">*~To-Do List~*</h1>
       <div className="flex justify-center mb-6">
         <button
           onClick={addTask}
-          className="bg-gradient-to-r from-emerald-500 to-green-400 text-white font-semibold px-6 py-2 rounded-full shadow hover:scale-105 transition-transform"
+          className="bg-gradient-to-r from-emerald-500 to-green-400 text-white font-semibold px-6 py-2 rounded-full shadow hover:scale-105 transition-transform cursor-pointer border-2 border-blue-400 hover:border-blue-700 "
         >
           Tambah Tugas
         </button>
@@ -198,13 +198,13 @@ export default function TodoList() {
                     <div className="flex space-x-2">
                       <button
                         onClick={() => editTask(task)}
-                        className="text-xs bg-blue-500 hover:bg-blue-700 text-white px-2 py-1 rounded"
+                        className="text-xs px-3 py-1 text-white font-semibold rounded bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-xl transition cursor-pointer border-2 border-black-400 hover:border-black"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => deleteTask(task.id)}
-                        className="text-xs bg-red-500 hover:bg-red-700 text-white px-2 py-1 rounded"
+                        className="text-xs px-3 py-1 text-white font-semibold rounded bg-gradient-to-r from-red-500 to-orange-400 hover:shadow-xl transition cursor-pointer border-2 border-black-400 hover:border-black"
                       >
                         Hapus
                       </button>
