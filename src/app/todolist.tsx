@@ -185,16 +185,24 @@ export default function TodoList() {
                   className={`border-l-4 ${taskColor} px-4 py-2 rounded shadow-sm`}
                 >
                   <div className="flex justify-between items-start">
-                    <span
-                      onClick={() => toggleTask(task.id)}
-                      className={`cursor-pointer block w-2/3 ${
-                        task.completed
-                          ? 'line-through text-gray-400'
-                          : 'font-medium text-gray-800'
-                      }`}
-                    >
-                      {task.text}
-                    </span>
+                  <span
+  onClick={() => toggleTask(task.id)}
+  className={`cursor-pointer flex items-center gap-2 w-2/3 ${
+    task.completed
+      ? 'line-through text-gray-400'
+      : 'font-medium text-gray-800'
+  }`}
+>
+{task.completed && <span className="text-green-600">✅</span>}
+  {!task.completed && timeRemaining[task.id] === 'Waktu habis!' && (
+    <span className="text-red-500">❌</span>
+  )}
+  {!task.completed && timeRemaining[task.id] !== 'Waktu habis!' && (
+    <span className="text-yellow-600">⏳</span>
+  )}
+  {task.text}
+ 
+</span>
                     <div className="flex space-x-2">
                       <button
                         onClick={() => editTask(task)}
@@ -212,10 +220,16 @@ export default function TodoList() {
                   <p className="text-sm text-gray-600 mt-1">
                     Deadline: {new Date(task.deadline).toLocaleString()}
                   </p>
-                  {!task.completed && (
-  <p className="text-xs font-semibold text-gray-500"> 
+                  {task.completed ? (
+  <p className="text-xs font-semibold text-green-600">Done</p>
+) : (
+  <p
+  className={`text-xs font-semibold ${
+    timeRemaining[task.id] === 'Waktu habis!' ? 'text-red-500' : 'text-gray-500'
+  }`}
+>
   ⏳ {timeRemaining[task.id] || 'Menghitung...'}
-  </p>
+</p>
 )}
                 </motion.li>
               );
