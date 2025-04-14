@@ -204,8 +204,7 @@ export default function TodoList() {
                       </button>
                       <button
                         onClick={() => deleteTask(task.id)}
-                        className="text-xs px-3 py-1 text-white font-semibold rounded bg-gradient-to-r from-red-500 to-orange-400 hover:shadow-xl transition cursor-pointer border-2 border-black-400 hover:border-black"
-                      >
+                        className="text-xs px-3 py-1 text-white font-semibold rounded bg-gradient-to-r from-red-500 to-orange-400 hover:shadow-xl transition cursor-pointer border-2 border-black-400 hover:border-black">
                         Hapus
                       </button>
                     </div>
@@ -213,9 +212,11 @@ export default function TodoList() {
                   <p className="text-sm text-gray-600 mt-1">
                     Deadline: {new Date(task.deadline).toLocaleString()}
                   </p>
-                  <p className="text-xs font-semibold text-gray-500">
-                    ⏳ {timeRemaining[task.id] || 'Menghitung...'}
-                  </p>
+                  {!task.completed && (
+  <p className="text-xs font-semibold text-gray-500"> 
+  ⏳ {timeRemaining[task.id] || 'Menghitung...'}
+  </p>
+)}
                 </motion.li>
               );
             })}
