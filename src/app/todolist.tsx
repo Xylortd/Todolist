@@ -9,6 +9,8 @@ import {
   deleteDoc,
   doc,
   updateDoc,
+  query,
+  orderBy,
 } from 'firebase/firestore';
 import { db } from '../app/lib/firebase';
 
@@ -26,7 +28,8 @@ export default function TodoList() {
 
   useEffect(() => {
     const fetchTasks = async () => {
-      const querySnapshot = await getDocs(collection(db, 'tasks'));
+      const q = query(collection(db, 'tasks'), orderBy('deadline'));
+      const querySnapshot = await getDocs(q);
       const tasksData = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -74,29 +77,37 @@ export default function TodoList() {
       confirmButtonText: 'Tambah',
       cancelButtonText: 'Batal',
       preConfirm: () => {
-        return [
-          (document.getElementById('swal-input1') as HTMLInputElement)?.value,
-          (document.getElementById('swal-input2') as HTMLInputElement)?.value,
-        ];
+        const taskName = (document.getElementById('swal-input1') as HTMLInputElement)?.value;
+        const deadline = (document.getElementById('swal-input2') as HTMLInputElement)?.value;
+  
+        if (!taskName || !deadline) {
+          Swal.showValidationMessage('Nama tugas dan deadline tidak boleh kosong!');
+          return;
+        }
+  
+        return [taskName, deadline];
       },
     });
-
-    if (formValues && formValues[0] && formValues[1]) {
-      const deadlineDate = new Date(formValues[1]);
-      if (deadlineDate < new Date()) {
-        Swal.fire('Error', 'Deadline tidak boleh di masa lalu', 'error');
-        return;
-      }
-
-      const newTask: Omit<Task, 'id'> = {
-        text: formValues[0],
-        completed: false,
-        deadline: formValues[1],
-      };
-      const docRef = await addDoc(collection(db, 'tasks'), newTask);
-      setTasks([...tasks, { id: docRef.id, ...newTask }]);
-      Swal.fire('Sukses!', 'Tugas berhasil ditambahkan.', 'success');
+  
+    if (!formValues) return;
+  
+    const [text, deadline] = formValues;
+    const deadlineDate = new Date(deadline);
+  
+    if (deadlineDate < new Date()) {
+      Swal.fire('Error', 'Deadline tidak boleh di masa lalu', 'error');
+      return;
     }
+  
+    const newTask: Omit<Task, 'id'> = {
+      text,
+      completed: false,
+      deadline,
+    };
+  
+    const docRef = await addDoc(collection(db, 'tasks'), newTask);
+    setTasks([...tasks, { id: docRef.id, ...newTask }]);
+    Swal.fire('Sukses!', 'Tugas berhasil ditambahkan.', 'success');
   };
 
   const toggleTask = async (id: string): Promise<void> => {
@@ -146,34 +157,31 @@ export default function TodoList() {
     }
   };
 
-  const sortedTasks = [...tasks].sort((a, b) =>
-    new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
-  );
-
   return (
-    <div className="max-w-md mx-auto mt-10 p-4 bg-gradient-to-br from-white to-gray-100 shadow-xl rounded-2xl">
-      <h1 className="text-3xl font-bold text-center text-emerald-500 mb-6 ">*~To-Do List~*</h1>
-      <div className="flex justify-center mb-6">
+    <div className="max-w-2xl mx-auto mt-12 p-6 bg-white shadow-2xl rounded-3xl border border-gray-200 dark:bg-gray-900 dark:border-gray-700 transition-all">
+      <h1 className="text-4xl font-extrabold text-center text-emerald-600 dark:text-emerald-400 mb-8 drop-shadow">✨ To-Do List ✨</h1>
+      <div className="flex justify-center mb-8">
         <button
           onClick={addTask}
-          className="bg-gradient-to-r from-emerald-500 to-green-400 text-white font-semibold px-6 py-2 rounded-full shadow hover:scale-105 transition-transform cursor-pointer border-2 border-blue-400 hover:border-blue-700 "
+          className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-8 py-3 rounded-full shadow-lg hover:scale-105 transition-transform duration-200 hover:border-2 hover:border-white
+ hover:cursor-pointer"
         >
-          Tambah Tugas
+          ➕ Tambah Tugas
         </button>
       </div>
       {loading ? (
-        <p className="text-center text-gray-500">Memuat tugas...</p>
+        <p className="text-center text-gray-500 dark:text-gray-400 animate-pulse">Memuat tugas...</p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-4">
           <AnimatePresence>
-            {sortedTasks.map((task) => {
+            {tasks.map((task) => {
               const timeLeft = calculateTimeRemaining(task.deadline);
               const isExpired = timeLeft === 'Waktu habis!';
               const taskColor = task.completed
-                ? 'bg-green-200 border-green-400'
+                ? 'bg-green-100 border-green-300 dark:bg-green-800 dark:border-green-600'
                 : isExpired
-                ? 'bg-red-200 border-red-400'
-                : 'bg-yellow-100 border-yellow-300';
+                ? 'bg-red-100 border-red-300 dark:bg-red-800 dark:border-red-600'
+                : 'bg-yellow-100 border-yellow-300 dark:bg-yellow-800 dark:border-yellow-600';
 
               return (
                 <motion.li
@@ -182,55 +190,45 @@ export default function TodoList() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className={`border-l-4 ${taskColor} px-4 py-2 rounded shadow-sm`}
+                  className={`border-l-4 ${taskColor} px-5 py-4 rounded-xl shadow-md hover:shadow-xl transition`}
                 >
                   <div className="flex justify-between items-start">
-                  <span
-  onClick={() => toggleTask(task.id)}
-  className={`cursor-pointer flex items-center gap-2 w-2/3 ${
-    task.completed
-      ? 'line-through text-gray-400'
-      : 'font-medium text-gray-800'
-  }`}
->
-{task.completed && <span className="text-green-600">✅</span>}
-  {!task.completed && timeRemaining[task.id] === 'Waktu habis!' && (
-    <span className="text-red-500">❌</span>
-  )}
-  {!task.completed && timeRemaining[task.id] !== 'Waktu habis!' && (
-    <span className="text-yellow-600">⏳</span>
-  )}
-  {task.text}
- 
-</span>
+                    <span
+                      onClick={() => toggleTask(task.id)}
+                      className={`cursor-pointer flex items-center gap-2 w-2/3 transition-all duration-200 ${
+                        task.completed ? 'line-through text-gray-400' : 'font-medium text-gray-800 dark:text-gray-200'
+                      }`}
+                    >
+                      {task.completed && <span className="text-green-600">✅</span>}
+                      {!task.completed && isExpired && <span className="text-red-500">❌</span>}
+                      {!task.completed && !isExpired && <span className="text-yellow-600">⏳</span>}
+                      {task.text}
+                    </span>
                     <div className="flex space-x-2">
                       <button
                         onClick={() => editTask(task)}
-                        className="text-xs px-3 py-1 text-white font-semibold rounded bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-xl transition cursor-pointer border-2 border-black-400 hover:border-black"
+                        className="text-xs px-3 py-1 text-white font-semibold rounded bg-blue-500 hover:bg-blue-600 transition border border-blue-700 hover:cursor-pointer hover:border-white "
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => deleteTask(task.id)}
-                        className="text-xs px-3 py-1 text-white font-semibold rounded bg-gradient-to-r from-red-500 to-orange-400 hover:shadow-xl transition cursor-pointer border-2 border-black-400 hover:border-black">
+                        className="text-xs px-3 py-1 text-white font-semibold rounded bg-red-500 hover:bg-red-600 transition border border-red-700 hover:cursor-pointer "
+                      >
                         Hapus
                       </button>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     Deadline: {new Date(task.deadline).toLocaleString()}
                   </p>
                   {task.completed ? (
-  <p className="text-xs font-semibold text-green-600">Done</p>
-) : (
-  <p
-  className={`text-xs font-semibold ${
-    timeRemaining[task.id] === 'Waktu habis!' ? 'text-red-500' : 'text-gray-500'
-  }`}
->
-  ⏳ {timeRemaining[task.id] || 'Menghitung...'}
-</p>
-)}
+                    <p className="text-xs font-semibold text-green-600 dark:text-green-400">✅ Selesai</p>
+                  ) : (
+                    <p className="text-xs font-semibold text-gray-600 dark:text-gray-300">
+                      ⏳ {timeRemaining[task.id] || 'Menghitung...'}
+                    </p>
+                  )}
                 </motion.li>
               );
             })}
