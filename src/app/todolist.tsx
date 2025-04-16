@@ -185,51 +185,49 @@ export default function TodoList() {
 
               return (
                 <motion.li
-                  key={task.id}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className={`border-l-4 ${taskColor} px-5 py-4 rounded-xl shadow-md hover:shadow-xl transition`}
-                >
-                  <div className="flex justify-between items-start">
-                    <span
-                      onClick={() => toggleTask(task.id)}
-                      className={`cursor-pointer flex items-center gap-2 w-2/3 transition-all duration-200 ${
-                        task.completed ? 'line-through text-gray-400' : 'font-medium text-gray-800 dark:text-gray-200'
-                      }`}
-                    >
-                      {task.completed && <span className="text-green-600">✅</span>}
-                      {!task.completed && isExpired && <span className="text-red-500">❌</span>}
-                      {!task.completed && !isExpired && <span className="text-yellow-600">⏳</span>}
-                      {task.text}
-                    </span>
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => editTask(task)}
-                        className="text-xs px-3 py-1 text-white font-semibold rounded bg-blue-500 hover:bg-blue-600 transition border border-blue-700 hover:cursor-pointer hover:border-white "
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => deleteTask(task.id)}
-                        className="text-xs px-3 py-1 text-white font-semibold rounded bg-red-500 hover:bg-red-600 transition border border-red-700 hover:cursor-pointer "
-                      >
-                        Hapus
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Deadline: {new Date(task.deadline).toLocaleString()}
-                  </p>
-                  {task.completed ? (
-                    <p className="text-xs font-semibold text-green-600 dark:text-green-400">✅ Selesai</p>
-                  ) : (
-                    <p className="text-xs font-semibold text-gray-600 dark:text-gray-300">
-                      ⏳ {timeRemaining[task.id] || 'Menghitung...'}
-                    </p>
-                  )}
-                </motion.li>
+  key={task.id}
+  initial={{ opacity: 0, y: -10 }}
+  animate={{ opacity: 1, y: 0 }}
+  exit={{ opacity: 0, x: -20 }}
+  transition={{ duration: 0.3 }}
+  className={`relative px-6 py-5 rounded-md border-4 border-[#306230] bg-[#8bac0f] text-[#0f380f] font-bold shadow-[4px_4px_0_#0f380f] transition-all duration-300 hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#0f380f] ${taskColor}`}
+>
+  <div className={`absolute left-0 top-0 h-full w-1 ${
+    task.completed ? 'bg-[#0f380f]' : isExpired ? 'bg-[#306230]' : 'bg-[#4d7c0f]'
+  }`} />
+
+  <div className="flex justify-between items-start">
+    <span
+      onClick={() => toggleTask(task.id)}
+      className={`cursor-pointer flex items-center gap-2 w-2/3 transition-all duration-200 ${
+        task.completed ? 'line-through opacity-60' : 'text-[#0f380f]'
+      }`}
+    >
+      {task.completed && <span>✅</span>}
+      {!task.completed && isExpired && <span>❌</span>}
+      {!task.completed && !isExpired && <span>⏳</span>}
+      {task.text}
+    </span>
+    <div className="flex space-x-2">
+      <button
+        onClick={() => editTask(task)}
+        className="text-[10px] px-2 py-1 bg-[#0f380f] text-[#9bbc0f] border-2 border-[#9bbc0f] shadow-[2px_2px_0_#183c1a] hover:scale-105 transition"
+      >
+        Edit
+      </button>
+      <button
+        onClick={() => deleteTask(task.id)}
+        className="text-[10px] px-2 py-1 bg-[#0f380f] text-[#9bbc0f] border-2 border-[#9bbc0f] shadow-[2px_2px_0_#183c1a] hover:scale-105 transition"
+      >
+        Hapus
+      </button>
+    </div>
+  </div>
+  <p className="text-[10px] mt-2">📅 {new Date(task.deadline).toLocaleString()}</p>
+  <p className="text-[10px] mt-1">
+    {task.completed ? '✅ Selesai' : `⏳ ${timeRemaining[task.id] || 'Menghitung...'}`}
+  </p>
+</motion.li>
               );
             })}
           </AnimatePresence>
