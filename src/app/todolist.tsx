@@ -178,10 +178,11 @@ export default function TodoList() {
               const timeLeft = calculateTimeRemaining(task.deadline);
               const isExpired = timeLeft === 'Waktu habis!';
               const taskColor = task.completed
-                ? 'bg-green-100 border-green-300 dark:bg-green-800 dark:border-green-600'
-                : isExpired
-                ? 'bg-red-100 border-red-300 dark:bg-red-800 dark:border-red-600'
-                : 'bg-yellow-100 border-yellow-300 dark:bg-yellow-800 dark:border-yellow-600';
+  ? 'bg-[#0f1e12] text-green-400 border-green-500 shadow-[0_0_10px_#00ff00] hover:shadow-[0_0_20px_#00ff00]'
+  : isExpired
+  ? 'bg-[#2c0f0f] text-red-400 border-red-500 shadow-[0_0_10px_#ff0000] hover:shadow-[0_0_20px_#ff0000]'
+  : 'bg-[#1e1a0f] text-yellow-300 border-yellow-500 shadow-[0_0_10px_#ffff00] hover:shadow-[0_0_20px_#ffff00]';
+
 
               return (
                 <motion.li
@@ -190,17 +191,13 @@ export default function TodoList() {
   animate={{ opacity: 1, y: 0 }}
   exit={{ opacity: 0, x: -20 }}
   transition={{ duration: 0.3 }}
-  className={`relative px-6 py-5 rounded-md border-4 border-[#306230] bg-[#8bac0f] text-[#0f380f] font-bold shadow-[4px_4px_0_#0f380f] transition-all duration-300 hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#0f380f] ${taskColor}`}
+  className={`border-l-4 px-5 py-4 rounded-md font-mono transition-all duration-300 ${taskColor}`}
 >
-  <div className={`absolute left-0 top-0 h-full w-1 ${
-    task.completed ? 'bg-[#0f380f]' : isExpired ? 'bg-[#306230]' : 'bg-[#4d7c0f]'
-  }`} />
-
   <div className="flex justify-between items-start">
     <span
       onClick={() => toggleTask(task.id)}
       className={`cursor-pointer flex items-center gap-2 w-2/3 transition-all duration-200 ${
-        task.completed ? 'line-through opacity-60' : 'text-[#0f380f]'
+        task.completed ? 'line-through text-green-500' : 'pipboy-glow'
       }`}
     >
       {task.completed && <span>✅</span>}
@@ -208,6 +205,8 @@ export default function TodoList() {
       {!task.completed && !isExpired && <span>⏳</span>}
       {task.text}
     </span>
+
+              
     <div className="flex space-x-2">
       <button
         onClick={() => editTask(task)}
